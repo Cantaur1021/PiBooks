@@ -1,8 +1,16 @@
+from __future__ import annotations
 from datetime import datetime, date
-from typing import Optional, Literal
+from typing import Optional
+from enum import Enum
 from sqlmodel import SQLModel, Field, Relationship
 
-AccountType = Literal["asset","liability","equity","income","expense"]
+
+class AccountType(str, Enum):
+    asset = "asset"
+    liability = "liability"
+    equity = "equity"
+    income = "income"
+    expense = "expense"
 
 class User(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
@@ -31,10 +39,15 @@ class JournalLine(SQLModel, table=True):
     debit: float = 0
     credit: float = 0
 
+class ContactKind(str, Enum):
+    customer = "customer"
+    supplier = "supplier"
+    both = "both"
+
 class Contact(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     name: str
-    kind: Literal["customer","supplier","both"] = "customer"
+    kind: ContactKind = ContactKind.customer
     email: str | None = None
     tax_number: str | None = None
 
@@ -46,13 +59,19 @@ class Tax(SQLModel, table=True):
     code: str | None = None
     country: str | None = None
 
+class InvoiceStatus(str, Enum):
+    draft = "draft"
+    approved = "approved"
+    paid = "paid"
+    void = "void"
+
 class Invoice(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     contact_id: int = Field(foreign_key="contact.id")
     number: str
     date: date
     due_date: date | None = None
-    status: Literal["draft","approved","paid","void"] = "draft"
+    status: InvoiceStatus = Field(default=InvoiceStatus.draft)
     currency: str = "AED"
     subtotal: float = 0
     tax_total: float = 0
