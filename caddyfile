@@ -1,0 +1,21 @@
+# Public domain with HTTPS
+books.example.com {
+  encode gzip
+  handle_path /api/* {
+    reverse_proxy api:8000
+  }
+  handle {
+    reverse_proxy web:3000
+  }
+}
+
+# Local LAN (uncomment this block, comment the one above if no domain)
+#:80 {
+#  encode gzip
+#  handle_path /api/* {
+#    reverse_proxy api:8000
+#  }
+#  handle {
+#    reverse_proxy web:3000
+#  }
+#}
